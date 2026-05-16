@@ -13,14 +13,14 @@ function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const studentRes = await axios.get("http://localhost:5000/api/students");
-      const attendanceRes = await axios.get("http://localhost:5000/api/attendance");
+      const studentRes = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/students");
+      const attendanceRes = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/attendance");
 
       setStudents(studentRes.data.students || []);
       setAttendance(attendanceRes.data.attendance || []);
 
       try {
-        const classRes = await axios.get("http://localhost:5000/api/classes");
+        const classRes = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/classes");
         setClasses(classRes.data.classes || []);
       } catch (error) {
         setClasses([]);
