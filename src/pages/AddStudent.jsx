@@ -3,6 +3,8 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 
 function AddStudent() {
+  const liveUrl = "https://ai-attendance-backend-42u1.onrender.com";
+  // const apiUrl = liveUrl; // Change to localUrl for local development
   const [student, setStudent] = useState({
     name: "",
     rollNo: "",
@@ -44,7 +46,7 @@ function AddStudent() {
       formData.append("faceImage", faceImage);
 
       const res = await axios.post(
-        "http://localhost:5000/api/students/add",
+        `${liveUrl}/api/students/add`,
         formData,
         {
           headers: {
