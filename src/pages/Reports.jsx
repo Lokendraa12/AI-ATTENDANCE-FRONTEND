@@ -15,8 +15,8 @@ function Reports() {
 
   const fetchData = async () => {
     try {
-      const studentRes = await axios.get("http://localhost:5000/api/students");
-      const attendanceRes = await axios.get("http://localhost:5000/api/attendance");
+      const studentRes = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/students");
+      const attendanceRes = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/attendance");
 
       setStudents(studentRes.data.students);
       setAttendanceData(attendanceRes.data.attendance);

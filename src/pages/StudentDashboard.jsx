@@ -11,8 +11,8 @@ function StudentDashboard() {
 
   const fetchStudentDashboard = async () => {
     try {
-      const studentRes = await axios.get("http://localhost:5000/api/students");
-      const attendanceRes = await axios.get("http://localhost:5000/api/attendance");
+      const studentRes = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/students");
+      const attendanceRes = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/attendance");
 
       const selectedStudent = studentRes.data.students.find(
         (item) => item._id === id
@@ -62,7 +62,7 @@ function StudentDashboard() {
           <div className="profile-box">
             {student.faceImage ? (
               <img
-                src={`http://localhost:5000${student.faceImage}`}
+                src={`https://ai-attendance-backend-42u1.onrender.com${student.faceImage}`}
                 alt={student.name}
                 className="student-profile-img"
               />

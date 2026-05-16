@@ -31,7 +31,7 @@ function Home() {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/students");
+      const res = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/students");
       setStudents(res.data.students);
     } catch (error) {
       setScanMessage("Students not loaded from backend.");
@@ -74,7 +74,7 @@ function Home() {
 
       const imageUrl = student.faceImage.startsWith("http")
         ? student.faceImage
-        : `http://localhost:5000${student.faceImage}`;
+        : `https://ai-attendance-backend-42u1.onrender.com${student.faceImage}`;
 
       const img = await faceapi.fetchImage(imageUrl);
 
@@ -146,7 +146,7 @@ function Home() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/attendance/mark", {
+      const res = await axios.post("https://ai-attendance-backend-42u1.onrender.com/api/attendance/mark", {
         rollNo: bestMatch.label,
       });
       setScanMessage(`✅ Attendance Marked | Roll No: ${bestMatch.label}`);

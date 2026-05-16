@@ -12,7 +12,7 @@ function Students() {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/students");
+      const res = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/students");
       setStudents(res.data.students);
     } catch (error) {
       alert("Students not loaded");
@@ -28,7 +28,7 @@ function Students() {
     if (!confirmDelete) return;
 
     try {
-      const res = await axios.delete(`http://localhost:5000/api/students/${id}`);
+      const res = await axios.delete(`https://ai-attendance-backend-42u1.onrender.com/api/students/${id}`);
       alert(res.data.message);
       setStudents((prev) => prev.filter((student) => student._id !== id));
     } catch (error) {
@@ -128,7 +128,7 @@ function Students() {
                 <td>
                   {student.faceImage ? (
                     <img
-                      src={`http://localhost:5000${student.faceImage}`}
+                      src={`https://ai-attendance-backend-42u1.onrender.com${student.faceImage}`}
                       alt={student.name}
                       className="premium-student-face"
                       onClick={()=>navigate(`/student-dashboard/${student._id}`)}

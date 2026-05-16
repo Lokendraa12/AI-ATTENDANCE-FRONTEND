@@ -83,7 +83,7 @@ npm run dev
 Backend runs on:
 
 ```bash
-http://localhost:5000
+https://ai-attendance-backend-42u1.onrender.com
 ```
 
 ---
