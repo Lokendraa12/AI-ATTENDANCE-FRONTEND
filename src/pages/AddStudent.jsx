@@ -3,7 +3,7 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 
 function AddStudent() {
-  const liveUrl = "https://ai-attendance-backend-42u1.onrender.com";
+  // const liveUrl = "https://ai-attendance-backend-42u1.onrender.com";
   // const apiUrl = liveUrl; // Change to localUrl for local development
   const [student, setStudent] = useState({
     name: "",
@@ -24,54 +24,50 @@ function AddStudent() {
     });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+ const handleImageChange = (e) => {
+  const file = e.target.files[0];
 
-    if (file) {
-      setFaceImage(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setFaceImage(reader.result);
+      setPreview(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+  }
+};
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const formData = new FormData();
+  try {
+    const res = await axios.post(
+      "https://ai-attendance-backend-42u1.onrender.com/api/students/add",
+      {
+        ...student,
+        faceImage,
+      }
+    );
 
-      Object.keys(student).forEach((key) => {
-        formData.append(key, student[key]);
-      });
+    alert(res.data.message);
 
-      formData.append("faceImage", faceImage);
+    setStudent({
+      name: "",
+      rollNo: "",
+      email: "",
+      course: "",
+      semester: "",
+      section: "",
+    });
 
-      const res = await axios.post(
-        `${liveUrl}/api/students/add`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      alert(res.data.message);
-
-      setStudent({
-        name: "",
-        rollNo: "",
-        email: "",
-        course: "",
-        semester: "",
-        section: "",
-      });
-
-      setFaceImage(null);
-      setPreview("");
-    } catch (error) {
-      alert(error.response?.data?.message || "Student not added");
-    }
-  };
+    setFaceImage(null);
+    setPreview("");
+  } catch (error) {
+    alert(error.response?.data?.message || "Student not added");
+  }
+};
 
   return (
     <div className="premium-layout">

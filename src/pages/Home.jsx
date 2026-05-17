@@ -6,7 +6,8 @@ import { Icon } from "@iconify/react";
 
 function Home() {
   const videoRef = useRef(null);
-
+ const [labeledDescriptors, setLabeledDescriptors] = useState([]);
+const [isScanning, setIsScanning] = useState(false);
   const [students, setStudents] = useState([]);
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [cameraOn, setCameraOn] = useState(false);
@@ -30,13 +31,20 @@ function Home() {
   };
 
   const fetchStudents = async () => {
-    try {
-      const res = await axios.get("https://ai-attendance-backend-42u1.onrender.com/api/students");
-      setStudents(res.data.students);
-    } catch (error) {
-      setScanMessage("Students not loaded from backend.");
-    }
-  };
+  try {
+    const res = await axios.get(
+      "https://ai-attendance-backend-42u1.onrender.com/api/students"
+    );
+
+    const allStudents = res.data.students || [];
+    setStudents(allStudents);
+
+    const descriptors = await createStudentDescriptors(allStudents);
+    setLabeledDescriptors(descriptors);
+  } catch (error) {
+    setScanMessage("Students not loaded from backend.");
+  }
+};
 
  const startCamera = async () => {
   try {
@@ -66,99 +74,128 @@ function Home() {
     }
   };
 
-  const loadStudentFaces = async () => {
-    const labeledDescriptors = [];
+  const createStudentDescriptors = async (studentList) => {
+  const descriptors = [];
 
-    for (const student of students) {
-      if (!student.faceImage) continue;
+  for (const student of studentList) {
+    if (!student.faceImage) continue;
 
-      const imageUrl = student.faceImage.startsWith("http")
-        ? student.faceImage
-        : `https://ai-attendance-backend-42u1.onrender.com${student.faceImage}`;
-
-      const img = await faceapi.fetchImage(imageUrl);
+    try {
+      const img = await faceapi.fetchImage(student.faceImage);
 
       const detection = await faceapi
         .detectSingleFace(
           img,
           new faceapi.TinyFaceDetectorOptions({
             inputSize: 416,
-            scoreThreshold: 0.6,
+            scoreThreshold: 0.3,
           })
         )
         .withFaceLandmarks()
         .withFaceDescriptor();
 
       if (detection) {
-        labeledDescriptors.push(
+        descriptors.push(
           new faceapi.LabeledFaceDescriptors(student.rollNo, [
             detection.descriptor,
           ])
         );
       }
+    } catch (error) {
+      console.log("Image error:", student.name);
     }
+  }
 
-    return labeledDescriptors;
-  };
+  return descriptors;
+};
 
   const handleGetStarted = async () => {
-    if (!modelsLoaded) {
-      setScanMessage("Models loading... please wait.");
-      return;
-    }
+  if (isScanning) return;
+
+  if (!modelsLoaded) {
+    setScanMessage("Models loading... please wait.");
+    return;
+  }
+
+  if (students.length === 0) {
+    setScanMessage("No students found.");
+    return;
+  }
+
+  if (labeledDescriptors.length === 0) {
+    setScanMessage("No registered face found.");
+    return;
+  }
+
+  try {
+    setIsScanning(true);
 
     if (!cameraOn) {
       await startCamera();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    setScanMessage("Scanning face... please look at camera.");
+
+    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.32);
+
+    let matchedRollNo = null;
+    let lastDistance = null;
+
+    for (let i = 1; i <= 12; i++) {
+      setScanMessage(`Scanning face... please wait.`);
+
+      const detection = await faceapi
+        .detectSingleFace(
+          videoRef.current,
+          new faceapi.TinyFaceDetectorOptions({
+            inputSize: 224,
+            scoreThreshold: 0.45,
+          })
+        )
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+
+      if (detection) {
+        const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+        lastDistance = bestMatch.distance;
+
+        if (bestMatch.label !== "unknown" && bestMatch.distance <= 0.32) {
+          matchedRollNo = bestMatch.label;
+          break;
+        }
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    if (!matchedRollNo) {
+      setScanMessage(
+        lastDistance
+          ? `❌ Face not matched. Distance: ${lastDistance.toFixed(2)}`
+          : "❌ No face detected. Please look at camera."
+      );
+      setIsScanning(false);
       return;
     }
 
-    setScanMessage("Scanning face...");
+    const res = await axios.post(
+      "https://ai-attendance-backend-42u1.onrender.com/api/attendance/mark",
+      { rollNo: matchedRollNo }
+    );
 
-    const labeledDescriptors = await loadStudentFaces();
+    setScanMessage(`✅ ${res.data.message} | Roll No: ${matchedRollNo}`);
 
-    if (labeledDescriptors.length === 0) {
-      setScanMessage("No registered face found.");
-      return;
-    }
-
-    const detection = await faceapi
-      .detectSingleFace(
-        videoRef.current,
-        new faceapi.TinyFaceDetectorOptions({
-          inputSize: 416,
-          scoreThreshold: 0.6,
-        })
-      )
-      .withFaceLandmarks()
-      .withFaceDescriptor();
-
-    if (!detection) {
-      setScanMessage("No face detected. Look at camera.");
-      return;
-    }
-
-    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.35);
-    const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-
-    if (bestMatch.label === "unknown" || bestMatch.distance > 0.35) {
-      setScanMessage("Face not matched.");
-      return;
-    }
-
-    try {
-      const res = await axios.post("https://ai-attendance-backend-42u1.onrender.com/api/attendance/mark", {
-        rollNo: bestMatch.label,
-      });
-      setScanMessage(`✅ Attendance Marked | Roll No: ${bestMatch.label}`);
-
-      setTimeout(() => {
-        setScanMessage("");
-        stopCamera();
-      }, 3000);
-    } catch (error) {
-      setScanMessage(error.response?.data?.message || "Attendance not marked.");
-    }
-  };
+    setTimeout(() => {
+      stopCamera();
+      setScanMessage("Click Get Started");
+      setIsScanning(false);
+    }, 3000);
+  } catch (error) {
+    setScanMessage(error.response?.data?.message || "Attendance not marked.");
+    setIsScanning(false);
+  }
+};
   return (
     <div>
       <Navbar />
@@ -182,9 +219,9 @@ function Home() {
   </button>
 ) : (
   <>
-    <button className="primary-btn" onClick={handleGetStarted}>
-      Scan Face
-    </button>
+    <button className="primary-btn" onClick={handleGetStarted} disabled={isScanning}>
+  {isScanning ? "Scanning..." : "Scan Face"}
+</button>
 
     <button className="secondary-btn" onClick={stopCamera}>
       Stop Camera

@@ -128,7 +128,7 @@ function Students() {
                 <td>
                   {student.faceImage ? (
                     <img
-                      src={`https://ai-attendance-backend-42u1.onrender.com${student.faceImage}`}
+                      src={student.faceImage}
                       alt={student.name}
                       className="premium-student-face"
                       onClick={()=>navigate(`/student-dashboard/${student._id}`)}

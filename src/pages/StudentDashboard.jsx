@@ -61,14 +61,20 @@ function StudentDashboard() {
         <div className="student-card">
           <div className="profile-box">
             {student.faceImage ? (
-              <img
-                src={`https://ai-attendance-backend-42u1.onrender.com${student.faceImage}`}
-                alt={student.name}
-                className="student-profile-img"
-              />
-            ) : (
-              <div className="avatar">{student.name.slice(0, 2).toUpperCase()}</div>
-            )}
+  <img
+    src={
+      student.faceImage.startsWith("data:image")
+        ? student.faceImage
+        : `https://ai-attendance-backend-42u1.onrender.com${student.faceImage}`
+    }
+    alt={student.name}
+    className="student-profile-img"
+  />
+) : (
+  <div className="avatar">
+    {student.name.slice(0, 2).toUpperCase()}
+  </div>
+)}
 
             <div>
               <h2>{student.name}</h2>

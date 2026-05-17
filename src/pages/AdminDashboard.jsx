@@ -38,6 +38,12 @@ function AdminDashboard() {
   const presentToday = todayAttendance.length;
   const absentToday = Math.max(students.length - presentToday, 0);
 
+  const validRollNumbers = students.map((student) => student.rollNo);
+
+const validAttendance = attendance.filter((item) =>
+  validRollNumbers.includes(item.rollNo)
+);
+
   return (
     <div className="premium-layout">
       <Sidebar />
@@ -81,7 +87,7 @@ function AdminDashboard() {
               </thead>
 
               <tbody>
-                {attendance.slice(0, 6).map((item) => (
+               {validAttendance.slice(0, 6).map((item) => (
                   <tr key={item._id}>
                     <td>{item.rollNo}</td>
                     <td>{item.studentName}</td>
@@ -97,9 +103,10 @@ function AdminDashboard() {
               </tbody>
             </table>
 
-            {attendance.length === 0 && (
+            {validAttendance.length === 0 && (
               <p className="empty-text">No attendance found.</p>
             )}
+            
           </div>
 
           <div className="ai-box">
