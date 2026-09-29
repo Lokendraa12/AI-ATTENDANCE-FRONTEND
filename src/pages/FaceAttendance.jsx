@@ -284,24 +284,20 @@ function FaceAttendance() {
             <h2>Scan Instructions</h2>
 
             <p>
-              <Icon icon="mdi:check-circle" color="green" height="20px" /> Face
-              center me rakho
+              <Icon icon="mdi:check-circle" color="green" height="20px" /> Keep your face centered.
             </p>
             <p>
-              <Icon icon="mdi:check-circle" color="green" height="20px" /> Good
-              lighting use karo
+              <Icon icon="mdi:check-circle" color="green" height="20px" />Use good lighting.
             </p>
             <p>
               <Icon icon="mdi:check-circle" color="green" height="20px" /> Only
-              one face visible hona chahiye
+              Only one face should be visible.
             </p>
             <p>
-              <Icon icon="mdi:check-circle" color="green" height="20px" /> Face
-              clear hona chahiye
+              <Icon icon="mdi:check-circle" color="green" height="20px" /> Make sure your face is clear and visible.
             </p>
             <p>
-              <Icon icon="mdi:check-circle" color="green" height="20px" /> AI
-              face match hone par attendance mark hogi
+              <Icon icon="mdi:check-circle" color="green" height="20px" />Attendance will be marked when the AI successfully matches your face.
             </p>
           </div>
         </div>
