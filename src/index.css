@@ -168,38 +168,143 @@ body {
 }
 
 /* Technologies Used */
+
+
+
 .tech-section {
-  padding: 70px 8%;
-  background: #0f172a;
+  padding: 90px 6%;
   text-align: center;
-  color: white;
+  background: #f8fafc;
 }
 
-.tech-section h2 {
-  font-size: 36px;
-  margin-bottom: 35px;
+.tech-header {
+  max-width: 650px;
+  margin: 0 auto 50px;
 }
+
+.tech-label {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.tech-header h2 {
+  margin: 0 0 12px;
+  font-size: 38px;
+  font-weight: 800;
+}
+
+.tech-header p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  opacity: 0.7;
+}
+
+/* GRID */
 
 .tech-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
+  gap: 22px;
+
+  justify-items: center;
 }
+
+/* CARD */
 
 .tech-card {
-  background: #1e293b;
+  width: 100%;
+  min-height: 145px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+
   padding: 25px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 18px;
-  font-size: 20px;
+
+  font-size: 17px;
   font-weight: 700;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  transition: 0.3s;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
+/* ICON */
+
+.tech-card svg {
+  transition: transform 0.25s ease;
+}
+
+/* HOVER */
+
 .tech-card:hover {
-  background: #38bdf8;
-  color: #0f172a;
-  transform: translateY(-6px);
+  transform: translateY(-7px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+}
+
+.tech-card:hover svg {
+  transform: scale(1.12);
+}
+
+/* ================================
+   TABLET
+================================ */
+
+@media (max-width: 900px) {
+  .tech-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 700px;
+  }
+
+  .tech-header h2 {
+    font-size: 32px;
+  }
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 600px) {
+  .tech-section {
+    padding: 65px 20px;
+  }
+
+  .tech-grid {
+    grid-template-columns: 1fr;
+    max-width: 380px;
+  }
+
+  .tech-card {
+    min-height: 125px;
+  }
+
+  .tech-header h2 {
+    font-size: 28px;
+  }
+
+  .tech-header p {
+    font-size: 14px;
+  }
 }
 
 /* Future Scope */
